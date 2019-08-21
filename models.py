@@ -8,8 +8,7 @@ DATABASE = SqliteDatabase('movies.sqlite')
 class User(UserMixin, Model):
     username = CharField(unique=True)
     email = CharField(unique=True)
-    password CharField(unique=True)
-    image = CharField()
+    password = CharField(unique=True)
 
     class Meta:
         database = DATABASE
@@ -22,8 +21,8 @@ class Flick(Model):
     class Meta:
         database = DATABASE
 
-de initialize():
-DATABASE.connect()
-DATABASE.create_tables([User, Flick], safe=True)
-print("TABLES CREATED.")
-DATABASE.close()
+def initialize():
+    DATABASE.connect()
+    DATABASE.create_tables([User, Flick], safe=True)
+    print("TABLES CREATED.")
+    DATABASE.close()
