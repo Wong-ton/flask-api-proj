@@ -1,13 +1,33 @@
 from flask import Flask, g
-# from api.api import api
 from flask import jsonify, request
+from flask_login import LoginManager
+from flask_cors import CORS
+from api.user import users
+# from api.api import api
 import requests
 import models
+
 
 DEBUG = True
 PORT = 8000
 
+# app.register_blueprint(api)
 app = Flask(__name__)
+
+login_manager = LoginManager()
+app.secret_key = 'random string'
+login_manager.init_app(app)
+
+@login_manager.user_loader
+def load_user(userid):
+    try:
+        return models.User.get(models.User.id == userid)
+    except models.DoesNotExist:
+        return None
+
+CORS(users, origins=["http://localhost:3000"], supports_credentials=True)
+
+app.register_blueprint(users)
 
 @app.before_request
 def before_request():
@@ -42,5 +62,3 @@ if __name__ == '__main__':
     app.run(debug=DEBUG, port=PORT)
 
 
-
-# app.register_blueprint(api)
