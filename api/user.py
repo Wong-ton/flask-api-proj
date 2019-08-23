@@ -3,9 +3,9 @@ import os
 import sys
 import secrets
 
-from flask import Blueprint, request, jsonify, url_for, send_file
+from flask import Blueprint, request, jsonify, url_for, send_file, redirect
 from flask_bcrypt import generate_password_hash, check_password_hash
-from flask_login import login_user, current_user
+from flask_login import login_user, current_user, login_required, logout_user
 from playhouse.shortcuts import model_to_dict
 
 users = Blueprint("users", "user", url_prefix="/users")
@@ -14,7 +14,8 @@ users = Blueprint("users", "user", url_prefix="/users")
 # REGISTER ACCOUNT ######################################################################################
 @users.route("/register", methods=["POST"])
 def register():
-    payload = request.form.to_dict()
+    # payload = request.form.to_dict()
+    payload = request.get_json()
     payload["email"].lower()
 
     print(payload)
@@ -38,7 +39,7 @@ def register():
 # LOGIN TO ACCOUNT ####################################################################################
 @users.route("/login", methods=["POST"])
 def login():
-    payload = request.form.to_dict()
+    payload = request.get_json()
     payload["email"].lower()
     try:
         user = models.User.get(models.User.email == payload["email"])
@@ -57,25 +58,63 @@ def login():
 # EDIT USER ##########################################################################################
 @users.route("/<id>", methods=["PUT"])
 def edit_user(id):
-    payload = request.form.to_dict()
+    payload = request.get_json()
     try:
         user = models.User.get(models.User.id == id)
         user_dict = model_to_dict(user)
-        if (check_password_hash(user_dict["password"], payload["password"])):
-            query = models.User.update(email = payload["email"]).where(models.User.id == id)
+        query = models.User.update(email = payload["email"]).where(models.User.id == id)
+        query.execute()
+        query = models.User.update(name = payload["name"]).where(models.User.id == id)
+        query.execute()
+        if (check_password_hash(user_dict["password"], payload["password"]) and (payload["new_password"] == payload["confirm_password"])):
+            payload["new_password"] = generate_password_hash(payload["new_password"])
+            query = models.User.update(password = payload["new_password"]).where(models.User.id == id)
             query.execute()
-            updated_user = models.User.get_by_id(id)
-            return jsonify(data = model_to_dict(updated_user), status={"code": 200, "success": True, "message": "Success"})
-        else: 
-            return jsonify(data={}, status={"code": 401, "message": "An error occurred, please try again."})
+        updated_user = models.User.get_by_id(id)
+
+        return jsonify(data = model_to_dict(updated_user), status={"code": 200, "success": True, "message": "Success"})
+        # else: 
+        #     return jsonify(data = {}, status={"code": 401, "message": "An error occurred, please try again."})
     except models.DoesNotExist:
-        return jsonify(data={}, status={"code": 401, "message": "An error occurred, please try again."})
+        return jsonify(data = {}, status={"code": 401, "message": "Passwords do not match."})
 
+# can change PW be same route as edit user?
+# UPDATE PASSWORD  ####################################################################################
+# @users.route("/<id>/password", methods=["PUT"])
+# def edit_password(id):
+#     payload = request.get_json()
+#     try:
+#         user = models.User.get(models.User.id == id)
+#         user_dict = model_to_dict(user)
+#         if (check_password_hash(user_dict["password"], payload["password"]) and (payload["new_password"] == payload["confirm_password"])):
+#             payload["new_password"] = generate_password_hash(payload["new_password"])
+#             query = models.User.update(password = payload["new_password"]).where(models.User.id == id)
+#             query.execute()
+#             updated_user = models.User.get_by_id(id)
 
-# LOGOUT & CLEAR COOKIES #############################################################################
+#             return jsonify(data = model_to_dict(updated_user), status={"code": 200, "success": True, "message" : "Success"})
+#         else:
+#             return jsonify(data={}, status={"code": 401, "message": "Passwords do not match."})
+#     except models.DoesNotExist:
+#         return jsonify(data={}, status={"code": 401, "message": "Invalid Username or Password"})
+
+# HELP!
+# DELETE #############################################################################
+@users.route("/<id>", methods=["DELETE"])
+# @login_required
+def delete_user(id):
+    query = models.User.delete().where(models.User.id == id)
+    query.execute()
+    return jsonify(data={}, status={"code": 200, "message" : "Account deleted."})
+    #
+
+# LOGOUT #######################################################################
 @users.route("/logout")
 @login_required
 def logout():
     logout_user()
     return redirect("/login")
+
+
+
 

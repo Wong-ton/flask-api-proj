@@ -4,7 +4,6 @@ from flask_login import LoginManager
 from flask_cors import CORS
 from api.user import users
 # from api.api import api
-import requests
 import models
 
 
