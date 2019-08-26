@@ -14,11 +14,8 @@ users = Blueprint("users", "user", url_prefix="/users")
 # REGISTER ACCOUNT ######################################################################################
 @users.route("/register", methods=["POST"])
 def register():
-    # payload = request.form.to_dict()
     payload = request.get_json()
     payload["email"].lower()
-
-    print(payload)
     
     try:
         models.User.get(models.User.email == payload["email"])
@@ -29,9 +26,6 @@ def register():
         user = models.User.create(**payload)
         login_user(user)
         user_dict = model_to_dict(user)
-
-        print(user_dict)
-
         del user_dict["password"]
         return jsonify(data=user_dict, status={"code": 201, "success": True, "message": "Account successfully created."})
 
@@ -41,10 +35,12 @@ def register():
 def login():
     payload = request.get_json()
     payload["email"].lower()
+
     try:
         user = models.User.get(models.User.email == payload["email"])
         user_dict = model_to_dict(user)
-        if(check_password_hash(user_dict["password"], payload["password"])):
+        
+        if (check_password_hash(user_dict["password"], payload["password"])):
             del user_dict["password"]
             login_user(user)
             return jsonify(data=user_dict, status={"code": 200, "success": True, "message": "Success"})
@@ -66,6 +62,7 @@ def edit_user(id):
         query.execute()
         query = models.User.update(name = payload["name"]).where(models.User.id == id)
         query.execute()
+        
         if (check_password_hash(user_dict["password"], payload["password"]) and (payload["new_password"] == payload["confirm_password"])):
             payload["new_password"] = generate_password_hash(payload["new_password"])
             query = models.User.update(password = payload["new_password"]).where(models.User.id == id)
@@ -98,22 +95,22 @@ def edit_user(id):
 #     except models.DoesNotExist:
 #         return jsonify(data={}, status={"code": 401, "message": "Invalid Username or Password"})
 
-# HELP!
+
 # DELETE #############################################################################
-@users.route("/<id>", methods=["DELETE"])
-# @login_required
+@users.route("/<id>/edit", methods=["DELETE"])
+@login_required
 def delete_user(id):
     query = models.User.delete().where(models.User.id == id)
     query.execute()
     return jsonify(data={}, status={"code": 200, "message" : "Account deleted."})
-    #
+    
 
 # LOGOUT #######################################################################
 @users.route("/logout")
 @login_required
 def logout():
     logout_user()
-    return redirect("/login")
+    redirect("/login")
 
 
 

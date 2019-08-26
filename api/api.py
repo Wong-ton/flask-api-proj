@@ -1,11 +1,23 @@
-from playhouse.shortcuts import model_to_dict
-from flask import Blueprint, jsonify
 import models
-import requests
+from playhouse.shortcuts import model_to_dict
+from flask import Blueprint, jsonify, request
 
-# api = Blueprint("api", "api", url_prefix="/api/v1")
+flick = Blueprint("flick", "flick", url_prefix="/flick/v1")
 
-# @api.route("/", methods=["GET"])
-# def get_flicks():
-#     api_key = "76b7eb9d74b21ff2bf120a4499967ac6"
-#     requests.get(f"https://api.themoviedb.org/3/search/movie?api_key={api_key}&query=Avengers")
+
+# # GET ALL FLICKS ############################################################################
+@flick.route("/", methods=["GET"])
+def get_all_flicks():
+    try:
+        flicks = [model_to_dict(flick) for flick in models.Flick.select()]
+        return jsonify(data=flicks, status={"code": 200, "message" : "Data retrieved."})
+    except models.DoesNotExist:
+        return jsonify(data={}, status={"code": 401, "message" : "There was an error retrieving the data." })
+
+
+# CREATE/ADD FLICKS ######
+# How would this work? 
+# Need to grab flick from external API and add it to a list
+# SAVE MOVIE ID
+
+

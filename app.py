@@ -3,18 +3,17 @@ from flask import jsonify, request
 from flask_login import LoginManager
 from flask_cors import CORS
 from api.user import users
-# from api.api import api
+from api.api import flick
 import models
 
 
 DEBUG = True
 PORT = 8000
 
-# app.register_blueprint(api)
 app = Flask(__name__)
 
 login_manager = LoginManager()
-app.secret_key = 'random string'
+app.secret_key = 'r4nd0m str1ng'
 login_manager.init_app(app)
 
 @login_manager.user_loader
@@ -24,9 +23,12 @@ def load_user(userid):
     except models.DoesNotExist:
         return None
 
+# URL will be changed to Heroku when ready to be deployed
 CORS(users, origins=["http://localhost:3000"], supports_credentials=True)
+CORS(flick, origins=["http://localhost:3000"], supports_credentials=True)
 
 app.register_blueprint(users)
+app.register_blueprint(flick)
 
 @app.before_request
 def before_request():
