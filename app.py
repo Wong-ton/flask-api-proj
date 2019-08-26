@@ -1,10 +1,11 @@
+import os
+import models
 from flask import Flask, g
 from flask import jsonify, request
 from flask_login import LoginManager
 from flask_cors import CORS
 from api.user import users
 from api.api import flick
-import models
 
 
 DEBUG = True
@@ -44,7 +45,7 @@ def after_request(response):
 
 @app.route('/')
 def index():
-    return "Flask"
+    return "This is Flask"
 
 # @app.route("/", methods=["GET"])
 # def get_flicks():
@@ -57,6 +58,10 @@ def index():
 #     except:
 #         return jsonify(data={}, status={"code": 401, "message": "There was an error retrieving your data."})
 
+
+if 'ON_HEROKU' in os.environ:
+    print('hitting')
+    models.initialize()
 
 if __name__ == '__main__':
     models.initialize()

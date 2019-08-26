@@ -1,9 +1,13 @@
 from peewee import *
 from flask_login import UserMixin
+from playhouse.db_url import connect
 import datetime
+import os
 
 # TEST DB
-DATABASE = SqliteDatabase('movies.sqlite')
+# DATABASE = SqliteDatabase('flicks.sqlite')
+# Heroku DB
+DATABASE = connect(os.environ.get('DATABASE_URL'))
 
 class User(UserMixin, Model):
     name = CharField(unique=True)

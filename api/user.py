@@ -52,7 +52,7 @@ def login():
 
 
 # EDIT USER ##########################################################################################
-@users.route("/<id>", methods=["PUT"])
+@users.route("/<id>/edit", methods=["PUT"])
 def edit_user(id):
     payload = request.get_json()
     try:
@@ -97,7 +97,7 @@ def edit_user(id):
 
 
 # DELETE #############################################################################
-@users.route("/<id>/edit", methods=["DELETE"])
+@users.route("/<id>/delete", methods=["DELETE"])
 @login_required
 def delete_user(id):
     query = models.User.delete().where(models.User.id == id)
@@ -106,11 +106,12 @@ def delete_user(id):
     
 
 # LOGOUT #######################################################################
-@users.route("/logout")
+@users.route("/logout", methods=["GET"])
 @login_required
 def logout():
     logout_user()
     redirect("/login")
+    return jsonify(status={"code": 200, "message": "Logged out"})
 
 
 
