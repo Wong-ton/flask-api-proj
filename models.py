@@ -5,9 +5,9 @@ import datetime
 import os
 
 # TEST DB
-# DATABASE = SqliteDatabase('flicks.sqlite')
+DATABASE = SqliteDatabase('flicks.sqlite')
 # Heroku DB
-DATABASE = connect(os.environ.get('DATABASE_URL'))
+# DATABASE = connect(os.environ.get('DATABASE_URL'))
 
 class User(UserMixin, Model):
     name = CharField(unique=True)
@@ -18,7 +18,6 @@ class User(UserMixin, Model):
         database = DATABASE
 
 class Flick(Model):
-    id = IntegerField()
     title = CharField() # Movie Title
     name = CharField() # Show Name
     poster_path = CharField()

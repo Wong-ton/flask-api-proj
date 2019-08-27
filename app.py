@@ -5,7 +5,7 @@ from flask import jsonify, request
 from flask_login import LoginManager
 from flask_cors import CORS
 from api.user import users
-from api.api import flick
+# from api.api import flick
 
 
 DEBUG = True
@@ -26,10 +26,10 @@ def load_user(userid):
 
 # URL will be changed to Heroku when ready to be deployed
 CORS(users, origins=["http://localhost:3000","https://boiling-peak-26000.herokuapp.com"], supports_credentials=True)
-CORS(flick, origins=["http://localhost:3000","https://boiling-peak-26000.herokuapp.com"], supports_credentials=True)
+# CORS(flick, origins=["http://localhost:3000","https://boiling-peak-26000.herokuapp.com"], supports_credentials=True)
 
 app.register_blueprint(users)
-app.register_blueprint(flick)
+# app.register_blueprint(flick)
 
 @app.before_request
 def before_request():
@@ -46,18 +46,6 @@ def after_request(response):
 @app.route('/')
 def index():
     return "This is Flask"
-
-# @app.route("/", methods=["GET"])
-# def get_flicks():
-#     try:
-#         api_key = "76b7eb9d74b21ff2bf120a4499967ac6"
-#         response = requests.get(f"https://api.themoviedb.org/3/search/movie?api_key={api_key}&query=Avengers")
-#         print(response)
-#         flicks = models_to_dict(response)
-#         return jsonify(data=flicks, status={"code": 200, "message": "Success"})
-#     except:
-#         return jsonify(data={}, status={"code": 401, "message": "There was an error retrieving your data."})
-
 
 if 'ON_HEROKU' in os.environ:
     print('hitting')

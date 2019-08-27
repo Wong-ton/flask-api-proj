@@ -97,7 +97,7 @@ def edit_user(id):
 
 
 # DELETE #############################################################################
-@users.route("/<id>/delete", methods=["DELETE"])
+@users.route("/<id>/", methods=["DELETE"])
 @login_required
 def delete_user(id):
     query = models.User.delete().where(models.User.id == id)
