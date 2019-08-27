@@ -25,8 +25,8 @@ def load_user(userid):
         return None
 
 # URL will be changed to Heroku when ready to be deployed
-CORS(users, origins=["http://localhost:3000"], supports_credentials=True)
-CORS(flick, origins=["http://localhost:3000"], supports_credentials=True)
+CORS(users, origins=["http://localhost:3000","https://boiling-peak-26000.herokuapp.com"], supports_credentials=True)
+CORS(flick, origins=["http://localhost:3000","https://boiling-peak-26000.herokuapp.com"], supports_credentials=True)
 
 app.register_blueprint(users)
 app.register_blueprint(flick)

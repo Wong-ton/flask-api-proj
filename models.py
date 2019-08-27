@@ -18,9 +18,12 @@ class User(UserMixin, Model):
         database = DATABASE
 
 class Flick(Model):
-    name = CharField()
-    genre = CharField()
+    id = IntegerField()
+    title = CharField() # Movie Title
+    name = CharField() # Show Name
+    poster_path = CharField()
     overview = CharField()
+    user = ForeignKeyField(User, backref='flick')
 
     class Meta:
         database = DATABASE
