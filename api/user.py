@@ -58,8 +58,9 @@ def edit_user(id):
     try:
         user = models.User.get(models.User.id == id)
         user_dict = model_to_dict(user)
-        query = models.User.update(email = payload["email"]).where(models.User.id == id)
-        query.execute()
+        # DONT NEED THIS BECAUSE EMAIL WONT BE CHANGED
+        # query = models.User.update(email = payload["email"]).where(models.User.id == id)
+        # query.execute()
         query = models.User.update(name = payload["name"]).where(models.User.id == id)
         query.execute()
         
@@ -68,8 +69,10 @@ def edit_user(id):
             query = models.User.update(password = payload["new_password"]).where(models.User.id == id)
             query.execute()
         updated_user = models.User.get_by_id(id)
+        user_dict = model_to_dict(updated_user)
 
-        return jsonify(data = model_to_dict(updated_user), status={"code": 200, "success": True, "message": "Success"})
+
+        return jsonify(data = user_dict, status={"code": 200, "success": True, "message": "Success"})
         # else: 
         #     return jsonify(data = {}, status={"code": 401, "message": "An error occurred, please try again."})
     except models.DoesNotExist:
@@ -97,7 +100,7 @@ def edit_user(id):
 
 
 # DELETE #############################################################################
-@users.route("/<id>/", methods=["DELETE"])
+@users.route("/<id>", methods=["DELETE"])
 @login_required
 def delete_user(id):
     query = models.User.delete().where(models.User.id == id)
